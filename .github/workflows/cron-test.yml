@@ -1,4 +1,4 @@
-name: FloodWatch Worker Test
+name: FloodWatch Weather Worker Test
 
 on:
   schedule:
@@ -6,19 +6,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  weather-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test scheduled execution
+      - name: Test Open-Meteo
         run: |
           echo "================================"
-          echo "FloodWatch Worker Test"
+          echo "FloodWatch Weather Worker Test"
           echo "================================"
-          echo "Executed at:"
-          date -u
+
+          RESPONSE=$(curl -sS \
+            "https://api.open-meteo.com/v1/forecast?latitude=14.35&longitude=121.06&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m")
+
+          echo "Open-Meteo response:"
+          echo "$RESPONSE"
+
           echo
-          echo "UTC timestamp:"
-          date -u +"%Y-%m-%dT%H:%M:%SZ"
-          echo
-          echo "Worker execution successful."
+          echo "Weather API request completed successfully."
