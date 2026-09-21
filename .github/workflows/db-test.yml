@@ -1,0 +1,47 @@
+name: FloodWatch Database Connection Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  db-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test MySQL connection
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          echo "================================"
+          echo "FloodWatch Database Test"
+          echo "================================"
+
+          echo "Testing connection to MySQL..."
+          echo "Host: ${DB_HOST}"
+          echo "Database: ${DB_NAME}"
+          echo "User: ${DB_USER}"
+
+          if mysql \
+            --connect-timeout=10 \
+            -h "$DB_HOST" \
+            -u "$DB_USER" \
+            -p"$DB_PASSWORD" \
+            "$DB_NAME" \
+            -e "SELECT 1 AS connection_test;" ; then
+
+            echo
+            echo "================================"
+            echo "DATABASE CONNECTION: SUCCESS"
+            echo "================================"
+
+          else
+
+            echo
+            echo "================================"
+            echo "DATABASE CONNECTION: FAILED"
+            echo "================================"
+            exit 1
+          fi
