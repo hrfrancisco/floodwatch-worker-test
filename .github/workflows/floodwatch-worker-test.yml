@@ -1,0 +1,35 @@
+name: FloodWatch Worker FTP Test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  worker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate test data
+        run: |
+          mkdir -p upload
+
+          cat > upload/test.json <<EOF
+          {
+            "status": "worker_data_test",
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "github_run_id": "${{ github.run_id }}"
+          }
+          EOF
+
+      - name: Upload only worker data
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: ${{ secrets.FTP_PORT }}
+          local-dir: ./upload/
+          server-dir: /htdocs/worker-data/
+          dangerous-clean-slate: false
