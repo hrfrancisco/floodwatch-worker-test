@@ -1,0 +1,35 @@
+name: FloodWatch FTP Test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  ftp-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create test file
+        run: |
+          mkdir -p upload
+          cat > upload/cron-test.json <<EOF
+          {
+            "status": "github_actions_ftp_test",
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "run_id": "${{ github.run_id }}",
+            "workflow": "${{ github.workflow }}"
+          }
+          EOF
+
+      - name: Upload test file to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: ${{ secrets.FTP_PORT }}
+          local-dir: ./upload/
+          server-dir: /htdocs/
+          dangerous-clean-slate: false
