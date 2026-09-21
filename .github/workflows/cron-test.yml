@@ -10,17 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test Open-Meteo
+      - name: Test OpenWeather
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
         run: |
           echo "================================"
-          echo "FloodWatch Weather Worker Test"
+          echo "FloodWatch OpenWeather Test"
           echo "================================"
 
           RESPONSE=$(curl -sS \
-            "https://api.open-meteo.com/v1/forecast?latitude=14.35&longitude=121.06&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m")
+            "https://api.openweathermap.org/data/2.5/weather?lat=14.3058&lon=121.0546&appid=${OPENWEATHER_API_KEY}&units=metric")
 
-          echo "Open-Meteo response:"
+          echo "OpenWeather response:"
           echo "$RESPONSE"
 
           echo
-          echo "Weather API request completed successfully."
+          echo "OpenWeather request completed."
